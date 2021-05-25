@@ -1,28 +1,49 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React from 'react'
-import { View, Text, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import React, { useContext, useEffect } from 'react'
+import { View, Text, KeyboardAvoidingView, Platform, Keyboard, Alert } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WhiteLogo } from '../components/WhiteLogo';
+import { AuthContext } from '../context/AuthContext';
 import { useForm } from '../hooks/useForm';
 import { styles } from '../theme/loginTheme';
+import { RegisterData } from '../interfaces/interfaces';
 
 
 interface Props extends StackScreenProps<any,any> {};
 
 export const RegisterScreen = ( { navigation } : Props ) => {
 
+    const { singUp, errorMessage, removeError } = useContext( AuthContext );
+
     const { name, email, password, onChange } = useForm({
         name: '',
         email: '',
         password: ''
     });
-
     const { top } = useSafeAreaInsets();
 
+    useEffect(() => {
+        if ( errorMessage.length !== 0 ) {
+            Alert.alert(
+                'Problemas al registrar',
+                errorMessage,
+                [
+                    { text: 'OK', onPress: () => removeError() }
+                ]
+            )
+        }
+    }, [ errorMessage ]);
+
+
     const onRegister = () => {
-        console.log({ name, email, password });
+        const data : RegisterData = {
+            nombre: name,
+            correo: email,
+            password
+        }
         Keyboard.dismiss(); // Oculta el teclado
+        singUp( data )
     };
 
     return (
