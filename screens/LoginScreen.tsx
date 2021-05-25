@@ -13,8 +13,7 @@ interface Props extends StackScreenProps<any,any> {};
 
 export const LoginScreen = ( { navigation } : Props ) => {
 
-    const { singIn, errorMessage } = useContext( AuthContext );
-
+    const { singIn, errorMessage, removeError } = useContext( AuthContext );
     const { email, password, onChange } = useForm({
         email: '',
         password: ''
@@ -23,9 +22,16 @@ export const LoginScreen = ( { navigation } : Props ) => {
     useEffect(() => {
         
         if ( errorMessage.length === 0 ) return;
-        Alert.alert( errorMessage );
-        
-
+        Alert.alert( 
+            'Problemas al autenticar', 
+            errorMessage,
+            [
+                { 
+                    text: 'Ok',
+                    onPress: () => removeError()
+                }
+            ]
+        );
     }, [ errorMessage ])
 
     const onLogin = () => {
